@@ -1,0 +1,2 @@
+pyyaml
+distilabel[hf-transformers, openai]>=1.0.0
