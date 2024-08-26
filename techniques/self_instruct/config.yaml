@@ -1,0 +1,13 @@
+datasets:
+  initial: "hassaan-qaisar/initial_prompt"
+  push: "ahsanirfan961/arena-dataset"
+
+models:
+  instruct: "microsoft/Phi-3.5-mini-instruct"
+  response: "Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct"
+
+input-batch-size: 1
+max-tokens: 1024
+temperature: 0.7
+
+n_instructions: 5
