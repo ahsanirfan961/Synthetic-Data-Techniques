@@ -30,12 +30,12 @@ from huggingface_hub import login
 login(token=HF_AUTH_TOKEN)
 
 if args.technique == 'agent-arena':
-    AgentArenaTechnique(HF_AUTH_TOKEN).process()
+    AgentArenaTechnique(config).process()
 elif args.technique == 'magpie':
-    MagpieTechnique(HF_AUTH_TOKEN).process()
+    MagpieTechnique(config).process()
 elif args.technique == 'self-instruct':
-    SelfInstructTechnique(HF_AUTH_TOKEN).process()
+    SelfInstructTechnique(config).process()
 elif args.technique == 'storm':
-    StormTechnique(HF_AUTH_TOKEN).process()
+    StormTechnique(config).process()
 else:
     print('Invalid technique name')

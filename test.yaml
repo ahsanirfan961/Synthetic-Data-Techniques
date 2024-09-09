@@ -1,5 +1,3 @@
-hf-token: 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
-
 datasets:
   - path: hassaan-qaisar/initial_prompt
     type: input

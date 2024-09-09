@@ -9,17 +9,21 @@ from distilabel.steps.tasks import TextGeneration, SelfInstruct
 from typing import List
 from pydantic import Field
 import yaml
-
-with open('./config.yaml') as file:
-    config = yaml.safe_load(file)
-
-DATASETS = config['datasets']
-MODELS = config['models']
-
+ 
 class SelfInstructTechnique:
 
-    def __init__(self, hf_token) -> None:
-        self.hf_token = hf_token
+    def __init__(self, config) -> None:
+        self.config = config
+
+        self.hf_token = config['hf_token']
+
+        self.MODELS = config['models']
+
+        self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
+        self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
+
+        self.instruct_model = next((model['path'] for model in config['models'] if model['type'] == 'instruct'), None)
+        self.response_model = next((model['path'] for model in config['models'] if model['type'] == 'response'), None)
         
         with Pipeline(name="Question Generation") as self.pipeline:
             self.load_hub_dataset = LoadDataFromHub(
@@ -29,12 +33,12 @@ class SelfInstructTechnique:
 
             self.self_instruct = SelfInstruct(
                 llm = TransformersLLM(
-                    model=MODELS['instruct'], 
+                    model=self.instruct_model, 
                     device= "cuda:0"
                 ),
-                input_batch_size=config['input-batch-size'],
+                input_batch_size=self.config['input-batch-size'],
                 add_raw_output=False,
-                num_instructions=config['n_instructions'],
+                num_instructions=self.config['n_instructions'],
                 criteria_for_query_generation=criteria_for_query_generation,
                 application_description=application_description,
                 output_mappings={"model_name": "instruction_model"},
@@ -46,10 +50,10 @@ class SelfInstructTechnique:
 
             self.answer_generation = TextGeneration(
                 llm = TransformersLLM(
-                    model=MODELS['response'], 
+                    model=self.response_model, 
                     device= "cuda:0"
                 ),
-                input_batch_size=config['input-batch-size'],
+                input_batch_size=self.config['input-batch-size'],
                 add_raw_output=False,
                 output_mappings={"generation": "response", "model_name": "response_model"},
             )
@@ -65,21 +69,21 @@ class SelfInstructTechnique:
         distiset = self.pipeline.run(
             parameters={
                 self.load_hub_dataset.name: {
-                    "repo_id": DATASETS['initial'],
+                    "repo_id": self.input_dataset,
                     "split": "train",
                 },
                 self.self_instruct.name: {
                     "llm": {
                         "generation_kwargs": {
-                            "max_new_tokens": config['max-tokens'],
-                            "temperature": config['temperature'],
+                            "max_new_tokens": self.config['max-tokens'],
+                            "temperature": self.config['temperature'],
                         },
                     },
                 },
             },
         )
         distiset.push_to_hub(
-           DATASETS['push'],
+           self.output_dataset,
            token=self.hf_token
         )
 
