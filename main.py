@@ -1,6 +1,8 @@
 import argparse
 import yaml
 from techniques.agent_arena.code import AgentArenaTechnique
+from techniques.genstruct.code import GenstructTechnique
+from techniques.instruction_synthesizer.code import InstructionSynthesizerTechnique
 from techniques.magpie.code import MagpieTechnique
 from techniques.self_instruct.code import SelfInstructTechnique
 from techniques.storm.code import StormTechnique
@@ -11,6 +13,8 @@ help = '''Please specify a technique to run,
         2. magpie
         3. self-instruct
         4. storm
+        5. genstruct
+        6. synthesizer
     '''
 
 # Step 1: Use argparse to parse the --config argument
@@ -37,5 +41,9 @@ elif args.technique == 'self-instruct':
     SelfInstructTechnique(config).process()
 elif args.technique == 'storm':
     StormTechnique(config).process()
+elif args.technique == 'genstruct':
+    GenstructTechnique(config).process()
+elif args.technique == 'synthesizer':
+    InstructionSynthesizerTechnique(config).process()
 else:
     print('Invalid technique name')

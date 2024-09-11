@@ -9,10 +9,10 @@ datasets:
 
 models:
   - path: microsoft/Phi-3.5-mini-instruct
-    usage: instruct
+    type: instruct
 
   - path: Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct
-    usage: response
+    type: response
 
 input-batch-size: 1
 max-tokens: 1024
