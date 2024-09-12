@@ -13,6 +13,8 @@ parser.add_argument('--response_model_path', type=str, required=True)
 
 args = parser.parse_args()
 
+print('config create started')
+
 data = {
     "hf-token": args.hf_token,
     "datasets": [
