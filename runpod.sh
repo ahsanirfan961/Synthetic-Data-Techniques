@@ -40,13 +40,10 @@ python Synthetic-Data-Techniques/create_config.py \
   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
   --response_model_path="$RESPONSE_MODEL_PATH"
 
+echo "Temporary config file created."
+cat temp.yaml
 
-ls
-echo "--------------------"
-ls Synthetic-Data-Techniques
-
-cat Synthetic-Data-Techniques/temp.yaml
-
+python Synthetic-Data-Techniques/main.py --config_file=temp.yaml --technique="$TECHNIQUE"
 
 # if [ "$DEBUG" == "False" ]; then
 #     runpodctl remove pod $RUNPOD_POD_ID
