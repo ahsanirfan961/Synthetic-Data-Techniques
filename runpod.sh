@@ -41,6 +41,10 @@ python Synthetic-Data-Techniques/create_config.py \
   --response_model_path="$RESPONSE_MODEL_PATH"
 
 
+ls
+echo "--------------------"
+ls Synthetic-Data-Techniques
+
 cat Synthetic-Data-Techniques/temp.yaml
 
 
