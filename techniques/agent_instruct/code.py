@@ -11,14 +11,14 @@ from pydantic import Field
 from techniques.utilities import *
 import yaml
 
-with open('./config.yaml', 'r') as file:
-    local_config = yaml.safe_load(file)
 
-models = local_config['models']
-question_prompt = local_config.get('question_gen_prompt')
-suggest_prompt = local_config.get('suggestion_gen_prompt')
-refined_question_prompt = local_config.get('refined_question_gen_prompt')
-BATCH_SIZE = local_config['input-batch-size']
+local_config = {}
+
+models = ''
+question_prompt = ''
+suggest_prompt = ''
+refined_question_prompt = ''
+BATCH_SIZE = ''
 
 criteria_for_query_generation = (
     "1. Relevance: Ensure the questions are directly related to the content and context of the input paragraph."

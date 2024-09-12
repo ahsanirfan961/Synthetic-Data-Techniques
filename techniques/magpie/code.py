@@ -9,11 +9,11 @@ from pydantic import Field
 import yaml
 from techniques.utilities import SplitList
 
-with open('./config.yaml') as file:
-    config = yaml.safe_load(file)
 
-DATASETS = config['datasets']
-MODELS = config['models']
+config = {}
+
+DATASETS = ''
+MODELS = ''
 
 class MagpieTechnique:
    

@@ -9,12 +9,10 @@ from pydantic import Field
 import yaml
 
 
-# Step 2: Load and parse the YAML file
-with open('./config.yaml', 'r') as file:
-    local_config = yaml.safe_load(file)
+local_config = {}
 
-models = local_config['models']['arena-learning']
-BATCH_SIZE = local_config['input-batch-size']
+models = ''
+BATCH_SIZE = ''
 
 ##################################
 #         Arena Learning         #

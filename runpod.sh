@@ -43,7 +43,7 @@ python Synthetic-Data-Techniques/create_config.py \
 echo "Temporary config file created."
 cat temp.yaml
 
-python Synthetic-Data-Techniques/main.py --config_file=temp.yaml --technique="$TECHNIQUE"
+python Synthetic-Data-Techniques/main.py --config=temp.yaml --technique="$TECHNIQUE"
 
 # if [ "$DEBUG" == "False" ]; then
 #     runpodctl remove pod $RUNPOD_POD_ID

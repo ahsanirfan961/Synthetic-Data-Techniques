@@ -4,13 +4,12 @@ from distilabel.steps import LoadDataFromHub
 import yaml
 from techniques.utilities import InstructClassification, FilterOnRanking
 
-with open('./config.yaml') as file:
-    config = yaml.safe_load(file)
+config = {}
 
-DATASETS = config['datasets']
-MODELS = config['models']
-LABELS = config['labels']
-THRESHOLDS = config['thresholds']
+DATASETS = ''
+MODELS = ''
+LABELS = ''
+THRESHOLDS ='' 
 
 class StormTechnique:
 

@@ -10,12 +10,7 @@ import yaml
 from techniques.agent_instruct.code import AgentInstruct
 from techniques.arena_learning.code import ArenaLearning
 
-
-# Step 2: Load and parse the YAML file
-with open('./config.yaml', 'r') as file:
-    local_config = yaml.safe_load(file)
-
-DATASETS = local_config['datasets']
+DATASETS = {}
 
 class AgentArenaTechnique:
     
