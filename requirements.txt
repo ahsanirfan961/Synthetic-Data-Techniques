@@ -2,4 +2,4 @@ pyyaml
 distilabel[hf-transformers, openai]>=1.0.0
 datasets
 transformers
-"huggingface_hub[cli]"
+huggingface_hub[cli]

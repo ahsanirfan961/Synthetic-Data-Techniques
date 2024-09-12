@@ -41,7 +41,7 @@ python Synthetic-Data-Techniques/create_config.py \
   --response_model_path="$RESPONSE_MODEL_PATH"
 
 
-cat Synthetic-Data-Techniques/test.yaml
+cat test.yaml
 
 
 # if [ "$DEBUG" == "False" ]; then
