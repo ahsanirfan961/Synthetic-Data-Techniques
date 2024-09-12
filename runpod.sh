@@ -30,7 +30,9 @@ if [ -n "$HUGGINGFACE_TOKEN" ]; then
     huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 fi
 
-python ./create_config.py \
+ls
+
+python .\create_config.py \
   --hf_token="$HUGGINGFACE_TOKEN" \
   --input_dataset_path="$INPUT_DATASET_PATH" \
   --output_dataset_path="$OUTPUT_DATASET_PATH" \
@@ -41,7 +43,7 @@ python ./create_config.py \
   --response_model_path="$RESPONSE_MODEL_PATH"
 
 
-cat ./test.yaml
+cat .\test.yaml
 
 
 # if [ "$DEBUG" == "False" ]; then
