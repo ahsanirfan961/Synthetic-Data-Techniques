@@ -1,0 +1,14 @@
+datasets:
+  - path: inputpath
+    type: input
+  - path: outpath
+    type: output
+hf-token: hello
+input-batch-size: 1
+max-tokens: 256
+models:
+  - path: instructmodel
+    type: instruct
+  - path: lala
+    type: response
+temperature: 0.7
