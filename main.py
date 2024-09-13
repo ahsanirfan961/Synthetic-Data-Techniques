@@ -1,6 +1,6 @@
 import argparse
 import yaml
-from techniques.agent_arena.code import AgentArenaTechnique
+from techniques.agent_instruct.code import AgentInstruct
 from techniques.genstruct.code import GenstructTechnique
 from techniques.instruction_synthesizer.code import InstructionSynthesizerTechnique
 from techniques.magpie.code import MagpieTechnique
@@ -9,10 +9,10 @@ from techniques.storm.code import StormTechnique
 
 
 help = '''Please specify a technique to run,
-    e.g 1. agent-arena
+    e.g 1. agent-instruct
         2. magpie
         3. self-instruct
-        4. storm
+        4. storm-curation
         5. genstruct
         6. synthesizer
     '''
@@ -33,13 +33,13 @@ HF_AUTH_TOKEN=config['hf-token']
 from huggingface_hub import login
 login(token=HF_AUTH_TOKEN)
 
-if args.technique == 'agent-arena':
-    AgentArenaTechnique(config).process()
+if args.technique == 'agent-instruct':
+    AgentInstruct(config).process()
 elif args.technique == 'magpie':
     MagpieTechnique(config).process()
 elif args.technique == 'self-instruct':
     SelfInstructTechnique(config).process()
-elif args.technique == 'storm':
+elif args.technique == 'storm-curation':
     StormTechnique(config).process()
 elif args.technique == 'genstruct':
     GenstructTechnique(config).process()

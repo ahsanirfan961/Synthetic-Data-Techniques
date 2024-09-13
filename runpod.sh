@@ -22,7 +22,7 @@ apt update
 apt install -y screen vim git-lfs
 screen
 
-pip install -r requirements.txt
+pip install -r Synthetic-Data-Techniques/requirements.txt
 
 # Check if HUGGINGFACE_TOKEN is set and log in to Hugging Face
 if [ -n "$HUGGINGFACE_TOKEN" ]; then
@@ -30,22 +30,34 @@ if [ -n "$HUGGINGFACE_TOKEN" ]; then
     huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 fi
 
-python create_config.py \
-  --hf_token="$HUGGINGFACE_TOKEN" \
-  --input_dataset_path="$INPUT_DATASET_PATH" \
-  --output_dataset_path="$OUTPUT_DATASET_PATH" \
-  --input_batch_size="$INPUT_BATCH_SIZE" \
-  --new_max_tokens="$NEW_MAX_TOKENS" \
-  --temperature="$TEMPERATURE" \
-  --instruct_model_path="$INSTRUCT_MODEL_PATH" \
-  --response_model_path="$RESPONSE_MODEL_PATH"
+# python Synthetic-Data-Techniques/create_config.py \
+#   --hf_token="$HUGGINGFACE_TOKEN" \
+#   --input_dataset_path="$INPUT_DATASET_PATH" \
+#   --output_dataset_path="$OUTPUT_DATASET_PATH" \
+#   --input_batch_size="$INPUT_BATCH_SIZE" \
+#   --new_max_tokens="$NEW_MAX_TOKENS" \
+#   --temperature="$TEMPERATURE" \
+#   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
+#   --response_model_path="$RESPONSE_MODEL_PATH"
 
+echo "$CONFIG"
+CONFIG=$(echo "$CONFIG" | sed "s/'/\"/g")
+echo "$CONFIG"
 
-cat test.yaml
+printf "$CONFIG" > temp.json
 
+python Synthetic-Data-Techniques/json2yaml.py \
+    --input=temp.json \
+    --output=temp.yaml
+
+cat temp.yaml
+
+echo "Temporary config file created."
+
+python Synthetic-Data-Techniques/main.py --config=temp.yaml --technique="$TECHNIQUE"
 
 # if [ "$DEBUG" == "False" ]; then
 #     runpodctl remove pod $RUNPOD_POD_ID
 # fi
 
-# sleep infinity
+sleep infinity

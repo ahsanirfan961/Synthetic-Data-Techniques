@@ -9,24 +9,23 @@ from pydantic import Field
 import yaml
 
 
-# Step 2: Load and parse the YAML file
-with open('./config.yaml', 'r') as file:
-    local_config = yaml.safe_load(file)
-
-models = local_config['models']['arena-learning']
-BATCH_SIZE = local_config['input-batch-size']
-
 ##################################
 #         Arena Learning         #
 ##################################
 
 class ArenaLearning:
     
-    def __init__(self, initial_dataset, push_dataset, hf_token) -> None:
+    def __init__(self, config) -> None:
+        self.config = config
+        self.hf_token = config['hf-token']
         
-        self.initial_dataset = initial_dataset
-        self.push_dataset = push_dataset
-        self.HF_AUTH_TOKEN = hf_token
+        self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
+        self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
+
+        self.response_models = [model['path'] for model in config['models'] if model['type'] == 'response']
+        self.ranking_model = next((model['path'] for model in config['models'] if model['type'] == 'rank'), None)
+
+        BATCH_SIZE = config['input-batch-size']
 
         with Pipeline(name="Battle of LLMs") as self.pipeline:
             self.load_dataset = LoadDataFromHub(
@@ -36,7 +35,7 @@ class ArenaLearning:
             # first answer
             self.text_generation_1 = TextGeneration(
                 name = "text_generation_01",
-                llm = TransformersLLM(model=models['answer-gen'][0], device= "cuda:0"),
+                llm = TransformersLLM(model=self.response_models[0], device= "cuda:0"),
                 # llm = TransformersLLM(model="Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct", device= "cuda:0"),
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
@@ -46,7 +45,7 @@ class ArenaLearning:
             self.text_generation_2 = TextGeneration(
                 name = "text_generation_02",
                 # llm = TransformersLLM(model="mistralai/Mistral-7B-v0.1", device= "cuda:0"),
-                llm = TransformersLLM(model=models['answer-gen'][1], device= "cuda:0"),
+                llm = TransformersLLM(model=self.response_models[1], device= "cuda:0"),
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
             )
@@ -54,7 +53,7 @@ class ArenaLearning:
             # third answer
             self.text_generation_3 = TextGeneration(
                 name = "text_generation_04",
-                llm = TransformersLLM(model=models['answer-gen'][2], device= "cuda:0"),
+                llm = TransformersLLM(model=self.response_models[2], device= "cuda:0"),
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
             )
@@ -75,7 +74,7 @@ class ArenaLearning:
             )
 
             self.ultrafeedback = UltraFeedback(
-                llm=OpenAILLM(model=models['ranking'], api_key=local_config['gpt4-key']),
+                llm=OpenAILLM(model=self.ranking_model, api_key=config['gpt4-key']),
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
                 aspect="overall-rating",
@@ -96,7 +95,7 @@ class ArenaLearning:
         distiset_1 = self.pipeline.run(
                 parameters={
                     self.load_dataset.name: {
-                        "repo_id": self.initial_dataset,
+                        "repo_id": self.input_dataset,
                         "split": "train",
                     },
                     self.text_generation_1.name: {
@@ -135,7 +134,7 @@ class ArenaLearning:
             )
 
         distiset_1.push_to_hub(
-            self.push_dataset,
+            self.output_dataset,
             token = self.HF_AUTH_TOKEN
         )
 

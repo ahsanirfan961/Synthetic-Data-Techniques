@@ -9,7 +9,7 @@ datasets:
 
 models:
   - path: NousResearch/Genstruct-7B
-    type: instruct
+    usage: instruct
 
 
 input-batch-size: 1
