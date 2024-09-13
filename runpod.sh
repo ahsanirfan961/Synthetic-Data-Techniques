@@ -41,6 +41,8 @@ fi
 #   --response_model_path="$RESPONSE_MODEL_PATH"
 
 echo "$CONFIG"
+CONFIG=$(echo "$CONFIG" | sed "s/'/\"/g")
+echo "$CONFIG"
 
 printf "$CONFIG" > temp.json
 

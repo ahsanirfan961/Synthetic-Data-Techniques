@@ -1,6 +1,5 @@
 import argparse
 import yaml
-from techniques.agent_arena.code import AgentArenaTechnique
 from techniques.agent_instruct.code import AgentInstruct
 from techniques.genstruct.code import GenstructTechnique
 from techniques.instruction_synthesizer.code import InstructionSynthesizerTechnique
