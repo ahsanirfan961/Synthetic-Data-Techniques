@@ -40,8 +40,11 @@ fi
 #   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
 #   --response_model_path="$RESPONSE_MODEL_PATH"
 
+pip install yq
+
+yq eval -P "$CONFIG" > temp.yaml
+
 echo "Temporary config file created."
-printf "$CONFIG" > temp.yaml
 
 python Synthetic-Data-Techniques/main.py --config=temp.yaml --technique="$TECHNIQUE"
 

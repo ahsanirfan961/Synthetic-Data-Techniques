@@ -12,14 +12,6 @@ from techniques.utilities import *
 import yaml
 
 
-local_config = {}
-
-models = ''
-question_prompt = ''
-suggest_prompt = ''
-refined_question_prompt = ''
-BATCH_SIZE = ''
-
 criteria_for_query_generation = (
     "1. Relevance: Ensure the questions are directly related to the content and context of the input paragraph."
     "2. Diversity: Include a variety of question types such as factual, analytical, inferential, and evaluative."
@@ -39,12 +31,21 @@ criteria_for_query_generation = (
 
 class AgentInstruct:
 
-    def __init__(self, initial_dataset, push_dataset, hf_token):
-        self.initial_dataset = initial_dataset
-        self.push_dataset = push_dataset
-        self.HF_AUTH_TOKEN = hf_token
+    def __init__(self, config):
+        self.config = config
+        self.hf_token = config['hf-token']
+        
+        self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
+        self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
 
-        shared_model = TransformersLLM(model=models['agent-instruct'], device="cuda:0")
+        self.instruct_model = next((model['path'] for model in config['models'] if model['type'] == 'instruct'), None)
+
+        question_prompt = config['question-gen-prompt']
+        suggest_prompt = config['suggestion-gen-prompt']
+        refined_question_prompt = config['refined-question-gen-prompt']
+        BATCH_SIZE = config['input-batch-size']
+
+        shared_model = TransformersLLM(model=self.instruct_model, device="cuda:0")
 
 
         with Pipeline(name="Question Generation") as self.pipeline:
@@ -132,38 +133,38 @@ class AgentInstruct:
         distiset = self.pipeline.run(
             parameters={
                 self.load_hub_dataset.name: {
-                    "repo_id": self.initial_dataset,
+                    "repo_id": self.input_dataset,
                     "split": "train",
                 },
                 self.text_generation.name: {
                     "llm": {
                         "generation_kwargs": {
-                            "max_new_tokens": local_config['max-tokens'],
-                            "temperature": local_config['temperature'],
+                            "max_new_tokens": self.config['max-tokens'],
+                            "temperature": self.config['temperature'],
                         },
                     },
                 },
                 self.self_instruct.name: {
                     "llm": {
                         "generation_kwargs": {
-                            "max_new_tokens": local_config['max-tokens'],
-                            "temperature": local_config['temperature'],
+                            "max_new_tokens": self.config['max-tokens'],
+                            "temperature": self.config['temperature'],
                         },
                     },
                 },
                 self.suggestion_generation.name: {
                     "llm": {
                         "generation_kwargs": {
-                            "max_new_tokens": local_config['max-tokens'],
-                            "temperature": local_config['temperature'],
+                            "max_new_tokens": self.config['max-tokens'],
+                            "temperature": self.config['temperature'],
                         },
                     },
                 },
                 self.question_generation.name: {
                     "llm": {
                         "generation_kwargs": {
-                            "max_new_tokens": local_config['max-tokens'],
-                            "temperature": local_config['temperature'],
+                            "max_new_tokens": self.config['max-tokens'],
+                            "temperature": self.config['temperature'],
                         },
                     },
                 },
@@ -181,8 +182,8 @@ class AgentInstruct:
 
         # Pushing dataset after question generation to huggingface
         split_dataset.push_to_hub(
-            self.push_dataset,
-            token = self.HF_AUTH_TOKEN
+            self.output_dataset,
+            token = self.hf_token
         )
 
 
