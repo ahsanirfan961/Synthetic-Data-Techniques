@@ -9,11 +9,6 @@ from pydantic import Field
 import yaml
 
 
-local_config = {}
-
-models = ''
-BATCH_SIZE = ''
-
 ##################################
 #         Arena Learning         #
 ##################################
@@ -21,6 +16,9 @@ BATCH_SIZE = ''
 class ArenaLearning:
     
     def __init__(self, initial_dataset, push_dataset, hf_token) -> None:
+
+        models = ''
+        BATCH_SIZE = ''
         
         self.initial_dataset = initial_dataset
         self.push_dataset = push_dataset

@@ -11,4 +11,4 @@ models:
       - "Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct"
       - "Qwen/Qwen2-7B-Instruct"
     ranking: "gpt-4o-mini"
-      
+       

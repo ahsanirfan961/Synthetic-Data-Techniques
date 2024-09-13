@@ -40,7 +40,9 @@ fi
 #   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
 #   --response_model_path="$RESPONSE_MODEL_PATH"
 
-pip install yq jq
+
+apt install jq
+pip install yq 
 
 yq eval -P "$CONFIG" > temp.yaml
 
