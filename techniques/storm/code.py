@@ -4,18 +4,20 @@ from distilabel.steps import LoadDataFromHub
 import yaml
 from techniques.utilities import InstructClassification, FilterOnRanking
 
-config = {}
-
-DATASETS = ''
-MODELS = ''
-LABELS = ''
-THRESHOLDS ='' 
-
 class StormTechnique:
 
-    def __init__(self, hf_token) -> None:
+    def __init__(self, config) -> None:
         
-        self.HF_AUTH_TOKEN = hf_token
+        self.config = config
+        self.hf_token = config['hf-token']
+        
+        self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
+        self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
+
+        self.classification_model = next((model['path'] for model in config['models'] if model['type'] == 'classification'), None)
+
+        LABELS = config['labels']
+        THRESHOLDS = config['thresholds']
 
         with Pipeline(name="Data Curation") as self.curation_pipeline:
             self.load_dataset = LoadDataFromHub(
@@ -27,7 +29,7 @@ class StormTechnique:
                 name="Educative_Classifier",
                 candidate_labels=LABELS['educative'],
                 input_batch_size=config['batch-size'],
-                model=MODELS['classification']
+                model=self.classification_model
             )
 
             self.educative_filter = FilterOnRanking(
@@ -40,7 +42,7 @@ class StormTechnique:
                 name="Difficulty_Classifier",
                 candidate_labels=LABELS['difficulty'],
                 input_batch_size=config['batch-size'],
-                model=MODELS['classification']
+                model=self.classification_model
             )
 
             self.difficulty_filter = FilterOnRanking(
@@ -55,13 +57,13 @@ class StormTechnique:
         curated_data = self.curation_pipeline.run(
             parameters={
                 self.load_dataset.name: {
-                    "repo_id": DATASETS['initial'],
+                    "repo_id": self.input_dataset,
                     "split": "train",
                 },
             },
         )
 
         curated_data.push_to_hub(
-            DATASETS['curated-push'],
+            self.output_dataset,
             token = self.HF_AUTH_TOKEN
         )

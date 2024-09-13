@@ -12,7 +12,7 @@ help = '''Please specify a technique to run,
     e.g 1. agent-instruct
         2. magpie
         3. self-instruct
-        4. storm
+        4. storm-curation
         5. genstruct
         6. synthesizer
     '''
@@ -39,7 +39,7 @@ elif args.technique == 'magpie':
     MagpieTechnique(config).process()
 elif args.technique == 'self-instruct':
     SelfInstructTechnique(config).process()
-elif args.technique == 'storm':
+elif args.technique == 'storm-curation':
     StormTechnique(config).process()
 elif args.technique == 'genstruct':
     GenstructTechnique(config).process()

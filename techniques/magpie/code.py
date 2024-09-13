@@ -9,16 +9,16 @@ from pydantic import Field
 import yaml
 from techniques.utilities import SplitList
 
-
-config = {}
-
-DATASETS = ''
-MODELS = ''
-
 class MagpieTechnique:
    
-    def __init__(self, hf_token) -> None:
-        self.hf_token = hf_token
+    def __init__(self, config) -> None:
+        self.config = config
+        self.hf_token = config['hf-token']
+        
+        self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
+        self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
+
+        self.magpie_model = next((model['path'] for model in config['models'] if model['type'] == 'magpie'), None)
 
         with Pipeline(name="Question Generation") as self.pipeline:
             self.load_hub_dataset = LoadDataFromHub(
@@ -65,14 +65,14 @@ class MagpieTechnique:
         distiset = self.pipeline.run(
             parameters={
                 self.load_hub_dataset.name: {
-                    "repo_id": DATASETS['initial'],
+                    "repo_id": self.input_dataset,
                     "split": "train",
                 },
             },
         )
 
         distiset.push_to_hub(
-           DATASETS['push'],
+           self.output_dataset,
            token=self.hf_token
         )
 

@@ -4,11 +4,11 @@ datasets:
   - path: ahsanirfan961/title-content-dataset
     type: input
 
-  - path: ahsanirfan961/genstruct-output
+  - path: ahsanirfan961/instruction-synthesizer-output
     type: output
 
 models:
-  - path: NousResearch/Genstruct-7B
+  - path: instruction-pretrain/instruction-synthesizer
     type: instruct
 
 
