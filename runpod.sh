@@ -40,11 +40,13 @@ fi
 #   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
 #   --response_model_path="$RESPONSE_MODEL_PATH"
 
+printf "$CONFIG" > temp.json
 
-apt install jq -y
-pip install yq 
+python Synthetic-Data-Techniques/json2yaml.py \
+    --input=temp.json \
+    --output=temp.yaml
 
-yq eval -P "$CONFIG" > temp.yaml
+cat temp.yaml
 
 echo "Temporary config file created."
 
