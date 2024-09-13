@@ -41,7 +41,7 @@ fi
 #   --response_model_path="$RESPONSE_MODEL_PATH"
 
 
-apt install jq
+apt install jq -y
 pip install yq 
 
 yq eval -P "$CONFIG" > temp.yaml
