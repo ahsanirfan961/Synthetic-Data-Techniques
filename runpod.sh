@@ -40,6 +40,8 @@ fi
 #   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
 #   --response_model_path="$RESPONSE_MODEL_PATH"
 
+echo "$CONFIG"
+
 printf "$CONFIG" > temp.json
 
 python Synthetic-Data-Techniques/json2yaml.py \
