@@ -30,18 +30,18 @@ if [ -n "$HUGGINGFACE_TOKEN" ]; then
     huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 fi
 
-python Synthetic-Data-Techniques/create_config.py \
-  --hf_token="$HUGGINGFACE_TOKEN" \
-  --input_dataset_path="$INPUT_DATASET_PATH" \
-  --output_dataset_path="$OUTPUT_DATASET_PATH" \
-  --input_batch_size="$INPUT_BATCH_SIZE" \
-  --new_max_tokens="$NEW_MAX_TOKENS" \
-  --temperature="$TEMPERATURE" \
-  --instruct_model_path="$INSTRUCT_MODEL_PATH" \
-  --response_model_path="$RESPONSE_MODEL_PATH"
+# python Synthetic-Data-Techniques/create_config.py \
+#   --hf_token="$HUGGINGFACE_TOKEN" \
+#   --input_dataset_path="$INPUT_DATASET_PATH" \
+#   --output_dataset_path="$OUTPUT_DATASET_PATH" \
+#   --input_batch_size="$INPUT_BATCH_SIZE" \
+#   --new_max_tokens="$NEW_MAX_TOKENS" \
+#   --temperature="$TEMPERATURE" \
+#   --instruct_model_path="$INSTRUCT_MODEL_PATH" \
+#   --response_model_path="$RESPONSE_MODEL_PATH"
 
 echo "Temporary config file created."
-cat temp.yaml
+printf "$CONFIG" > temp.yaml
 
 python Synthetic-Data-Techniques/main.py --config=temp.yaml --technique="$TECHNIQUE"
 
@@ -49,4 +49,4 @@ python Synthetic-Data-Techniques/main.py --config=temp.yaml --technique="$TECHNI
 #     runpodctl remove pod $RUNPOD_POD_ID
 # fi
 
-# sleep infinity
+sleep infinity
