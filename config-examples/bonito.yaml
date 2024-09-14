@@ -1,0 +1,21 @@
+hf-token: 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
+
+datasets:
+  - path: ahsanirfan961/title-content-dataset
+    type: input
+
+  - path: ahsanirfan961/bonito-output
+    type: output
+
+models:
+  - path: BatsResearch/bonito-v1
+    type: instruct
+
+
+input-batch-size: 1
+max-tokens: 512
+temperature: 0.7
+n_instructions: 5   # Number of instructions to generate per raw corpus of text
+top_p: 0.5
+task_type: qa
+
