@@ -8,6 +8,8 @@ datasets:
 models: 
   - path: Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct
     type: magpie
+    vendor: huggingface
+    api_key: null
     
 magpie_pre_query_template: llama3
 

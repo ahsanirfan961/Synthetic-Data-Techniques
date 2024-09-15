@@ -1,4 +1,4 @@
-from distilabel.llms import TransformersLLM
+from distilabel.llms import TransformersLLM, OpenAILLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import LoadDataFromHub, KeepColumns
 from distilabel.steps import Step, StepInput
@@ -18,16 +18,20 @@ class MagpieTechnique:
         self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
         self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
 
-        self.magpie_model = next((model['path'] for model in config['models'] if model['type'] == 'magpie'), None)
+        self.magpie_model_config = next((model for model in config['models'] if model['type'] == 'magpie'), None)
 
-        with Pipeline(name="Question Generation") as self.pipeline:
-            self.load_hub_dataset = LoadDataFromHub(
-                name="load_dataset",
+        if self.magpie_model_config['vendor'] == 'openai':
+            self.magpie_model = OpenAILLM(
+               model=self.magpie_model_config['path'], 
+               api_key=self.magpie_model_config['api_key'],
+               generation_kwargs={
+                    "temperature": config['temperature'],
+                    "max_new_tokens": config['max_tokens'],
+                }
             )
-
-            self.magpie = Magpie(
-                llm=TransformersLLM(
-                    model=config['model'],
+        elif self.magpie_model_config['vendor'] == 'huggingface':
+            self.magpie_model = TransformersLLM(
+                    model=self.magpie_model_config['path'],
                     magpie_pre_query_template=config['magpie_pre_query_template'],
                     generation_kwargs={
                         "temperature": config['temperature'],
@@ -35,6 +39,14 @@ class MagpieTechnique:
                     },
                     device="cuda:0",
                 ),
+
+        with Pipeline(name="Question Generation") as self.pipeline:
+            self.load_hub_dataset = LoadDataFromHub(
+                name="load_dataset",
+            )
+
+            self.magpie = Magpie(
+                llm=self.magpie_model,
                 # only_instruction=True,
                 n_turns = config['conversation_turns']
             )

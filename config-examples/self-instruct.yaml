@@ -10,9 +10,13 @@ datasets:
 models:
   - path: microsoft/Phi-3.5-mini-instruct
     type: instruct
+    vendor: huggingface
+    api_key: null
 
   - path: Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct
     type: response
+    vendor: huggingface
+    api_key: null
 
 input-batch-size: 1
 max-tokens: 1024

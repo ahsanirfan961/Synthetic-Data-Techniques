@@ -9,7 +9,6 @@ from distilabel.steps.tasks import TextGeneration, SelfInstruct, UltraFeedback
 from typing import List
 from pydantic import Field
 from techniques.utilities import *
-import yaml
 
 
 criteria_for_query_generation = (
@@ -29,24 +28,26 @@ criteria_for_query_generation = (
 #         Agent Instruct         #
 ##################################
 
-class AgentInstruct:
-
+class AgentInstructTechnique:
+ 
     def __init__(self, config):
-        self.config = config
+        self.config = config 
         self.hf_token = config['hf-token']
         
         self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
         self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
 
-        self.instruct_model = next((model['path'] for model in config['models'] if model['type'] == 'instruct'), None)
+        self.instruct_model = next((model for model in config['models'] if model['type'] == 'instruct'), None)
+
+        if self.instruct_model['vendor'] == 'openai':
+            shared_model = OpenAILLM(model=self.instruct_model['path'], api_key=self.instruct_model['api_key'])
+        elif self.instruct_model['vendor'] == 'huggingface':
+            shared_model = TransformersLLM(model=self.instruct_model['path'], device="cuda:0")
 
         question_prompt = config['question-gen-prompt']
         suggest_prompt = config['suggestion-gen-prompt']
         refined_question_prompt = config['refined-question-gen-prompt']
         BATCH_SIZE = config['input-batch-size']
-
-        shared_model = TransformersLLM(model=self.instruct_model, device="cuda:0")
-
 
         with Pipeline(name="Question Generation") as self.pipeline:
             self.load_hub_dataset = LoadDataFromHub(
@@ -55,8 +56,6 @@ class AgentInstruct:
             )
 
             self.text_generation = TextGeneration(
-                # llm = TransformersLLM(model="microsoft/Phi-3-mini-4k-instruct"),
-                # llm = TransformersLLM(model="meta-llama/Meta-Llama-3-8B-Instruct", device= "cuda:0"),
                 llm = shared_model,
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
@@ -65,7 +64,6 @@ class AgentInstruct:
 
             self.self_instruct = SelfInstruct(
                 llm = shared_model,
-                # llm = TransformersLLM(model="Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct", device= "cuda:0"),
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
                 num_instructions=5,
@@ -91,7 +89,6 @@ class AgentInstruct:
             )
 
             self.suggestion_generation = TextGeneration(
-                # llm = TransformersLLM(model="meta-llama/Meta-Llama-3-8B-Instruct", device= "cuda:0"),
                 llm = shared_model,
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
@@ -116,7 +113,6 @@ class AgentInstruct:
 
             self.question_generation = TextGeneration(
                 llm = shared_model,
-                # llm = TransformersLLM(model="Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct", device= "cuda:0"),
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
                 output_mappings={"model_name": "refined_q_model"},

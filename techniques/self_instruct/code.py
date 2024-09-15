@@ -1,6 +1,6 @@
 from datasets import DatasetDict, Dataset
 import pandas as pd
-from distilabel.llms import TransformersLLM
+from distilabel.llms import TransformersLLM, OpenAILLM
 from distilabel.pipeline import Pipeline
 from distilabel.steps import LoadDataFromHub, KeepColumns, LoadDataFromDicts
 from distilabel.steps import Step, StepInput
@@ -22,8 +22,30 @@ class SelfInstructTechnique:
         self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
         self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
 
-        self.instruct_model = next((model['path'] for model in config['models'] if model['type'] == 'instruct'), None)
-        self.response_model = next((model['path'] for model in config['models'] if model['type'] == 'response'), None)
+        self.instruct_model_config = next((model for model in config['models'] if model['type'] == 'instruct'), None)
+        self.response_model_config = next((model for model in config['models'] if model['type'] == 'response'), None)
+
+        if self.instruct_model_config['vendor'] == 'openai':
+            self.instruct_model = OpenAILLM(
+                model=self.instruct_model_config['path'],
+                api_key=self.instruct_model_config['api_key'],
+            )
+        elif self.instruct_model_config['vendor'] == 'huggingface':
+            self.instruct_model = TransformersLLM(
+                model=self.instruct_model_config['path'],
+                device="cuda:0",
+            )
+        
+        if self.response_model_config['vendor'] == 'openai':
+            self.response_model = OpenAILLM(
+                model=self.response_model_config['path'],
+                api_key=self.response_model_config['api_key'],
+            )
+        elif self.response_model_config['vendor'] == 'huggingface':
+            self.response_model = TransformersLLM(
+                model=self.response_model_config['path'],
+                device="cuda:0",
+            )
         
         with Pipeline(name="Question Generation") as self.pipeline:
             self.load_hub_dataset = LoadDataFromHub(
@@ -32,10 +54,7 @@ class SelfInstructTechnique:
             )
 
             self.self_instruct = SelfInstruct(
-                llm = TransformersLLM(
-                    model=self.instruct_model, 
-                    device= "cuda:0"
-                ),
+                llm = self.instruct_model,
                 input_batch_size=self.config['input-batch-size'],
                 add_raw_output=False,
                 num_instructions=self.config['n_instructions'],
@@ -49,10 +68,7 @@ class SelfInstructTechnique:
             )
 
             self.answer_generation = TextGeneration(
-                llm = TransformersLLM(
-                    model=self.response_model, 
-                    device= "cuda:0"
-                ),
+                llm = self.response_model,
                 input_batch_size=self.config['input-batch-size'],
                 add_raw_output=False,
                 output_mappings={"generation": "response", "model_name": "response_model"},

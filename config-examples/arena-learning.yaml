@@ -8,16 +8,24 @@ datasets:
 models:
   - path: microsoft/Phi-3-mini-4k-instruct
     type: response
+    vendor: huggingface
+    api_key: null
 
   - path: Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct
     type: response
+    vendor: huggingface
+    api_key: null
+
   - path: Qwen/Qwen2-7B-Instruct
     type: response
+    vendor: huggingface
+    api_key: null
 
   - path: gpt-4o-mini
     type: rank
+    vendor: openai
+    api_key: sk-None-ODWdiqGBT8hipSb13ynBT3BlbkFJgiasGXdbhT3h4hCT4EpO
        
-gpt4-key: sk-None-ODWdiqGBT8hipSb13ynBT3BlbkFJgiasGXdbhT3h4hCT4EpO
 
 input-batch-size: 1
 max-tokens: 1024

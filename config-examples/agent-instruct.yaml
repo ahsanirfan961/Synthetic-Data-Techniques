@@ -1,5 +1,3 @@
-hf-token: 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
-
 datasets:
   - path: hassaan-qaisar/initial_prompt
     type: input
@@ -7,10 +5,11 @@ datasets:
   - path: ahsanirfan961/arena-dataset
     type: output
 
-
 models:
   - path: microsoft/Phi-3.5-mini-instruct
     type: instruct
+    vendor: huggingface
+    api_key: null
 
 input-batch-size: 1
 max-tokens: 1024 

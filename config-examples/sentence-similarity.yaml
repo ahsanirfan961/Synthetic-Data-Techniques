@@ -10,6 +10,8 @@ datasets:
 models:
   - path: microsoft/Phi-3.5-mini-instruct
     type: description
+    vendor: huggingface
+    api_key: null
 
 
 input-batch-size: 1

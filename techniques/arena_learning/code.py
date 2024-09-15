@@ -22,8 +22,20 @@ class ArenaLearningTechnique:
         self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
         self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
 
-        self.response_models = [model['path'] for model in config['models'] if model['type'] == 'response']
-        self.ranking_model = next((model['path'] for model in config['models'] if model['type'] == 'rank'), None)
+        response_models_config = [model for model in config['models'] if model['type'] == 'response']
+        ranking_model_config = next((model for model in config['models'] if model['type'] == 'rank'), None)
+
+        for model_config in response_models_config:
+            if model_config['vendor'] == 'openai':
+                model = OpenAILLM(model=model_config['path'], api_key=model_config['api_key'])
+            elif model_config['vendor'] == 'huggingface':
+                model = TransformersLLM(model=model_config['path'], device="cuda:0")
+            self.response_models.append(model)
+
+        if ranking_model_config['vendor'] == 'openai':
+            self.ranking_model = OpenAILLM(model=ranking_model_config['path'], api_key=ranking_model_config['api_key'])
+        elif ranking_model_config['vendor'] == 'huggingface':
+            self.ranking_model = TransformersLLM(model=ranking_model_config['path'], device="cuda:0")
 
         BATCH_SIZE = config['input-batch-size']
 
@@ -35,8 +47,7 @@ class ArenaLearningTechnique:
             # first answer
             self.text_generation_1 = TextGeneration(
                 name = "text_generation_01",
-                llm = TransformersLLM(model=self.response_models[0], device= "cuda:0"),
-                # llm = TransformersLLM(model="Doctor-Shotgun/TinyLlama-1.1B-32k-Instruct", device= "cuda:0"),
+                llm = self.response_models[0],
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
             )
@@ -44,8 +55,7 @@ class ArenaLearningTechnique:
             # second answer
             self.text_generation_2 = TextGeneration(
                 name = "text_generation_02",
-                # llm = TransformersLLM(model="mistralai/Mistral-7B-v0.1", device= "cuda:0"),
-                llm = TransformersLLM(model=self.response_models[1], device= "cuda:0"),
+                llm = self.response_models[1],
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
             )
@@ -53,7 +63,7 @@ class ArenaLearningTechnique:
             # third answer
             self.text_generation_3 = TextGeneration(
                 name = "text_generation_04",
-                llm = TransformersLLM(model=self.response_models[2], device= "cuda:0"),
+                llm = self.response_models[2],
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
             )
@@ -74,7 +84,7 @@ class ArenaLearningTechnique:
             )
 
             self.ultrafeedback = UltraFeedback(
-                llm=OpenAILLM(model=self.ranking_model, api_key=config['gpt4-key']),
+                llm=self.ranking_model,
                 input_batch_size=BATCH_SIZE,
                 add_raw_output=False,
                 aspect="overall-rating",
@@ -172,11 +182,9 @@ def select_best_generation(row):
     answers = row['generations'][1:]
 
     max_competitor_rating = max(competitor_ratings)
-    # print(max_competitor_rating)
+
     if max_competitor_rating > base_rating:
-        # print("in if")
         best_competitor_index = competitor_ratings.index(max_competitor_rating) + 1
-        # print(best_competitor_index)
         row['generations'][0] = row['generations'][best_competitor_index]
         row['generations'][best_competitor_index] = base_answer
     row['generation'] = row['generations'][0]

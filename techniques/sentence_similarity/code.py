@@ -5,7 +5,7 @@ from typing import List
 from distilabel.pipeline import Pipeline
 from distilabel.steps import LoadDataFromHub, KeepColumns, PushToHub
 from distilabel.steps.tasks import TextGeneration
-from distilabel.llms import TransformersLLM
+from distilabel.llms import TransformersLLM, OpenAILLM
 from pydantic import BaseModel
 
 
@@ -17,7 +17,20 @@ class SentenceSimilarityTechnique:
         self.input_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'input'), None)
         self.output_dataset = next((dataset['path'] for dataset in config['datasets'] if dataset['type'] == 'output'), None)
 
-        self.description_model = next((model['path'] for model in config['models'] if model['type'] == 'description'), None)
+        self.description_model = next((model for model in config['models'] if model['type'] == 'description'), None)
+
+        if self.description_model['vendor'] == 'openai':
+            model = OpenAILLM(
+                model=self.description_model['path'], 
+                api_key=self.description_model['key'],
+                structured_output={"format": "json", "schema": Description}
+            )
+        elif self.description_model['vendor'] == 'huggingface':
+            model = TransformersLLM(
+                    model=self.description_model['path'],
+                    device="cuda:0",
+                    structured_output={"format": "json", "schema": Description}
+                ),
 
         with Pipeline(name='sentence-similarity-pipeline') as self.synthesis_pipeline:
             self.load_data_from_hub = LoadDataFromHub(
@@ -31,11 +44,7 @@ class SentenceSimilarityTechnique:
 
             self.synthesizer = TextGeneration(
                 name='description-text-genration',
-                llm = TransformersLLM(
-                    model=self.description_model,
-                    device="cuda:0",
-                    structured_output={"format": "json", "schema": Description}
-                ),
+                llm = model,
                 output_mappings={"generation": "descriptions"},
                 input_batch_size=self.config['input-batch-size']
             )

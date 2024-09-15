@@ -1,6 +1,6 @@
 import argparse
 import yaml
-from techniques.agent_instruct.code import AgentInstruct
+from techniques.agent_instruct.code import AgentInstructTechnique
 from techniques.arena_learning.code import ArenaLearningTechnique
 from techniques.bonito.code import BonitoTechnique
 from techniques.genstruct.code import GenstructTechnique
@@ -40,7 +40,7 @@ from huggingface_hub import login
 login(token=HF_AUTH_TOKEN)
 
 if args.technique == 'agent-instruct':
-    AgentInstruct(config).process()
+    AgentInstructTechnique(config).process()
 elif args.technique == 'magpie':
     MagpieTechnique(config).process()
 elif args.technique == 'self-instruct':
