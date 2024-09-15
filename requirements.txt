@@ -1,6 +1,8 @@
 pyyaml
 distilabel[hf-transformers, openai]>=1.0.0
+distilabel[outlines] 
 datasets
+dataset
 transformers
 huggingface_hub[cli]
 -e git+https://github.com/BatsResearch/bonito.git#egg=bonito
