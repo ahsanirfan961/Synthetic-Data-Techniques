@@ -131,7 +131,7 @@ class ParseDescriptions(Step):
             print("Can't parse descriptions")
             print(example['descriptions'])
 
-        yield inputs
+        yield new_generations
 
 class Description(BaseModel):
     good: list[str]
