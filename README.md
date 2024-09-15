@@ -9,6 +9,9 @@ This repository provides various techniques for synthetic data generation.
 4. Storm 
 5. Genstruct
 6. Instruction Synthesizer
+7. arena-learning
+8. bonito
+9. sentence-similarity
 
 ## Setup
 **1. Install Dependencies:**
@@ -31,6 +34,9 @@ Example techniques are,
 4. storm
 5. genstruct
 6. synthesizer
+7. arena-learning
+8. bonito
+9. sentence-similarity
 
 For help run,
 ```bash

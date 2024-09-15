@@ -1,11 +1,14 @@
 import argparse
 import yaml
 from techniques.agent_instruct.code import AgentInstruct
+from techniques.arena_learning.code import ArenaLearningTechnique
+from techniques.bonito.code import BonitoTechnique
 from techniques.genstruct.code import GenstructTechnique
 from techniques.instruction_synthesizer.code import InstructionSynthesizerTechnique
 from techniques.magpie.code import MagpieTechnique
 from techniques.self_instruct.code import SelfInstructTechnique
 from techniques.storm.code import StormTechnique
+from techniques.sentence_similarity.code import SentenceSimilarityTechnique
 
 
 help = '''Please specify a technique to run,
@@ -15,6 +18,9 @@ help = '''Please specify a technique to run,
         4. storm-curation
         5. genstruct
         6. synthesizer
+        7. arena-learning
+        8. bonito
+        9. sentence-similarity
     '''
 
 # Step 1: Use argparse to parse the --config argument
@@ -45,5 +51,11 @@ elif args.technique == 'genstruct':
     GenstructTechnique(config).process()
 elif args.technique == 'synthesizer':
     InstructionSynthesizerTechnique(config).process()
+elif args.technique == 'arena-learning':
+    ArenaLearningTechnique(config).process()
+elif args.technique == 'bonito':
+    BonitoTechnique(config).process()
+elif args.technique == 'sentence-similarity':
+    SentenceSimilarityTechnique(config).process()
 else:
     print('Invalid technique name')

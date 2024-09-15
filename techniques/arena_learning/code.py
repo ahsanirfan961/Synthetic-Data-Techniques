@@ -13,7 +13,7 @@ import yaml
 #         Arena Learning         #
 ##################################
 
-class ArenaLearning:
+class ArenaLearningTechnique:
     
     def __init__(self, config) -> None:
         self.config = config
