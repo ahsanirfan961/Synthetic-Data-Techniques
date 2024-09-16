@@ -126,3 +126,26 @@ class SplitList(Step):
     def process(self, inputs: StepInput) -> StepOutput:
         inputs = ListSplitter(self.split_column).split_instructions_from_dataset(inputs)
         yield inputs
+
+class GeneratePrompts(Step):
+    
+    template: str = Field(..., description="The template to use for generating prompts.")
+
+    @property
+    def inputs(self) -> List[str]:
+        # Specify the input fields expected by this step
+        return []
+
+    @property
+    def outputs(self) -> List[str]:
+        # Specify the output fields that this step will produce
+        return ['instruction']
+
+    def process(self, inputs: StepInput) -> StepOutput:
+
+        for example in inputs:
+            example['instruction'] = self.template
+            for value in example.keys():
+                example['instruction'] = example['instruction'].replace(f'{{{value}}}', example[value])
+
+        yield inputs

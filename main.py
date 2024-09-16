@@ -9,6 +9,7 @@ from techniques.magpie.code import MagpieTechnique
 from techniques.self_instruct.code import SelfInstructTechnique
 from techniques.storm.code import StormTechnique
 from techniques.sentence_similarity.code import SentenceSimilarityTechnique
+from techniques.tiny_stories.code import TinyStoriesTechnique
 
 
 help = '''Please specify a technique to run,
@@ -21,6 +22,7 @@ help = '''Please specify a technique to run,
         7. arena-learning
         8. bonito
         9. sentence-similarity
+        10. tiny-stories
     '''
 
 # Step 1: Use argparse to parse the --config argument
@@ -57,5 +59,7 @@ elif args.technique == 'bonito':
     BonitoTechnique(config).process()
 elif args.technique == 'sentence-similarity':
     SentenceSimilarityTechnique(config).process()
+elif args.technique == 'tiny-stories':
+    TinyStoriesTechnique(config).process()
 else:
     print('Invalid technique name')

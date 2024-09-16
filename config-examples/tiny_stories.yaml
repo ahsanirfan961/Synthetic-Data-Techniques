@@ -1,0 +1,20 @@
+hf-token: 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
+
+datasets:
+  - path: ahsanirfan961/noun-adj-verb
+    type: input
+
+  - path: ahsanirfan961/tinystories
+    type: output
+
+models:
+  - path: microsoft/Phi-3.5-mini-instruct
+    type: description
+    vendor: huggingface
+    api_key: null
+
+
+input-batch-size: 4
+max-tokens: 512
+temperature: 0.7
+n_stories: 5
